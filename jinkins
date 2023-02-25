@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('CI') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'osama-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                git 'https://github.com/Osama-hassan007/App-For-Final-Project.git'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                git 'https://github.com/nagy004/hello-app.git'
                 sh """
                 docker login -u ${USERNAME} -p ${PASSWORD}
                 docker build . -t nagy004/finalapp --network host
@@ -16,12 +16,12 @@ pipeline {
         }
          stage('CD') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'osama-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                git 'https://github.com/Osama-hassan007/App-For-Final-Project.git'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                git 'https://github.com/nagy004/hello-app.git'
                 sh """
                 docker login -u ${USERNAME} -p ${PASSWORD}
-                kubectl apply -f /var/jenkins_home/workspace/nagato/app.yaml
-                kubectl apply -f /var/jenkins_home/workspace/nagato/lba.yaml
+                kubectl apply -f /var/jenkins_home/workspace/nagy-pipe2/app.yaml
+                kubectl apply -f /var/jenkins_home/workspace/nagy-pipe2/lb.yaml
                 """
                 }
             }
