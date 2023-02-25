@@ -5,18 +5,17 @@
 ## Project Overview:
 ![Project Overview](https://github.com/AbdelrahmanAnany/ITI-Final-CI-CD-Project-Infrastructure/blob/main/screenshots/devops-project-overview.png)
 
-Deploy a Python web application on GKE using CI/CD Jenkins Pipeline using the following steps and high-level diagram:
-1. Implement a secure GKE Cluster
-2. Deploy and configure Jenkins on GKE
-3. Deploy the backend application on GKE using the Jenkins pipeline
+Deploy a Python web application on EKS using CI/CD Jenkins Pipeline using the following steps and high-level diagram:
+1. Implement a secure EKS Cluster
+2. Deploy and configure Jenkins on EKS
+3. Deploy the backend application on EKS using the Jenkins pipeline
 
 
 ## Tools:
 | Tool | Purpose |
 | ------ | ------ |
-| [ Google Kubernetes Engine (GKE) ](https://cloud.google.com/kubernetes-engine) | Google Kubernetes Engine (GKE) is a managed, production-ready environment for running containerized applications. |
+| [ Amazon (EKS) ](https://aws.amazon.com/solutions/implementations/amazon-eks/) | Amazon Elastic Kubernetes Service (EKS) is a managed service and certified Kubernetes conformant to run Kubernetes on AWS. |
 | [ Jenkins ](https://www.jenkins.io) | Jenkins – an open-source automation server is enabling developers worldwide to reliably build, test, and deploy their software. |
-| [ Helm ](https://helm.sh) | Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes applications. |
 | [ Docker ](https://www.docker.com) | Docker is a set of platform-as-a-service (PaaS) products that use OS-level virtualization to deliver software in containers|
 | [ Terraform ](https://www.terraform.io) | Terraform is an open-source infrastructure as a code software tool that enables you to safely and predictably create, change, and improve infrastructure. |
 
@@ -29,15 +28,15 @@ Deploy a Python web application on GKE using CI/CD Jenkins Pipeline using the fo
   - Firewall to allow SSH Connection
 
 - ### GKE Files Consist of:
-  - private container cluster resource with authorized networks configuration
-  - node pool with count 3 
+  - private container cluster resource 
+  - node group with count 1
 - ### Bastion File: 
-    - for Creating a Private VM to Connect with GKE Cluster
+    - for Creating a Private VM to Connect with EKS Cluster Node 
 
 ## Second Part: Build the Infrastructure
 ### 1. Clone The Repo:
 ```
-git clone https://github.com/AbdelrahmanAnany/ITI-Final-CI-CD-Project-Infrastructure/
+git clone https://github.com/nagy004/Final-ITI-DevOps-CI-CD-Project-Infrastructure
 ```
 ### 2. Navigate to Terraform Code
 > After you clone the code navigate to the `terraform` folder to build the infrastructure:
@@ -58,65 +57,73 @@ terraform plan
 ```
 terraform apply
 ```
-## Third Part: Connect to Private GKE Cluster through Bastion VM
-> After the Infrastructure is built navigate to `Compute Engine` from the GCP console then `VM instances` and click the SSH to `private-instance` to run these commands:
-![vm-instance](https://github.com/AbdelrahmanAnany/ITI-Final-CI-CD-Project-Infrastructure/blob/main/screenshots/vm-instance.png)
+## Third Part: Connect to Private EKS Cluster Node through Bastion VM 
+> After You ssh on the private Node install Docker on it by applying the following steps :
 
-### 1. Install Kubectl
+### 1. Update your system's package index by running the following command:
+ 
 ```
-sudo apt-get install kubectl
+sudo yum update
 ```
-### 2. Install GKE gcloud auth Plugin
-```
-sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
-```
-### 3. Log in with your Credentials
-```
-gcloud auth login
-```
-### 4. Set your active Application Default Credentials
-> to set your active Application Default Credentials to your account run these commands:
-```
-gcloud auth application-default login
-```
-### 5. Connect to GKE Cluster
-> Go to the `Kubernetes Engine` Page in your `Clusters` tab you will find the `private-cluster`
-
-![private-cluster](https://github.com/AbdelrahmanAnany/ITI-Final-CI-CD-Project-Infrastructure/blob/main/screenshots/private-cluster.png)
-
-> Click on the `Action button` "Three dots" then `Connect`, Copy the command and paste it into the `VM SSH window`
-```
-gcloud container clusters get-credentials private-cluster --zone us-central1-a --project iti-abdelrahman
-```
-### 6. Building the Dockerfile for jenkins and pushing to Dockerhub
-Create the Dockerfile:
-Then:
-
-    docker build -t 3anany/jenkinsgcp
-    docker push 3anany/jenkinsgcp
-
-![](https://github.com/AbdelrahmanAnany/ITI-Final-CI-CD-Project-Infrastructure/blob/main/screenshots/jenkins-image.png)
-
-Deploying the jenkins app
-Create the deployment.yml file
+### 2. Install the required packages to set up the Docker repository:
 
 ```
-    kubectl apply -f deployment.yml
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
 ```
-### 7. Get `admin` user Password
+### 3. Use the following command to set up the Docker repository:
 
-Connect to Cluster via VM and type
 ```
-  kubectl exec --namespace jenkins -it svc/jenkins-service -c jenkins -- /bin/cat /var/jenkins_home/secrets/initialAdminPassword && echo
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
 ```
-### 8. Get the `Jenkins URL`
+### 4. Install Docker by running the following command:
+
 ```
-kubectl get all -n jenkins
+sudo yum install docker-ce docker-ce-cli containerd.io
+
 ```
-and copy the external IP address and paste in browser url as $ExternalIP:port
-![](https://github.com/AbdelrahmanAnany/ITI-Final-CI-CD-Project-Infrastructure/blob/main/screenshots/jenkins.png)
+### 5. Start and enable Docker to automatically start at boot time:
+
+```
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+### 6. Verify that Docker is installed and running by running the following command:
+
+
+```
+   sudo docker run hello-world
+
+```
+### 7. connect with the EKS cluster API 
+
+```
+aws eks --region us-east-1 update-kubeconfig --name nagy-eks
+
+```
+### 7. make your name spaces 
+
+```
+kubectl create namespace <namespace-name>
+
+```
+
+### 8. get into the cluster directory and use the yaml files in it to make your cluster deployment & services  
+```
+kubectl get apply -f <file-name>
+```
+
+### 9. get your working pods and services
+```
+kubectl get pods -n <namespace-name>
+kubectl get svc -n <namespace-name>
+
+```
+### 10. complete the installation for you jenkins and make your managed credintials
+### 11. Run your pipe-line 
+
 
 
 **Connected Repository**
+https://github.com/nagy004/Final-ITI-DevOps-CI-CD-Project-Infrastructure
 
-Jekins CI/CD Repository: https://github.com/AbdelrahmanAnany/ITI-Final-CI-CD-Project-Application
