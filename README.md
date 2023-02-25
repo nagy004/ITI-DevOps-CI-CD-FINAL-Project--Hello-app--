@@ -3,9 +3,8 @@
 ## by Abdelrahman Anany
 
 ## Project Overview:
-![Project Overview](https://github.com/AbdelrahmanAnany/ITI-Final-CI-CD-Project-Infrastructure/blob/main/screenshots/devops-project-overview.png)
 
-Deploy a Python web application on EKS using CI/CD Jenkins Pipeline using the following steps and high-level diagram:
+Deploy a Python web application on EKS using CI/CD Jenkins Pipeline using the following steps:
 1. Implement a secure EKS Cluster
 2. Deploy and configure Jenkins on EKS
 3. Deploy the backend application on EKS using the Jenkins pipeline
