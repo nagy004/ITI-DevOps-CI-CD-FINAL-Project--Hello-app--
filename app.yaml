@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
         - name: nagy-app
-          image: docker.nagy004/my-jenkins-image2
+          image: docker.io/nagy004/finalapp 
           ports:
             - containerPort: 3000
