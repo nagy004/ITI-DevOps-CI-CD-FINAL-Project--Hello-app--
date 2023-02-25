@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nagy-app
+  namespace: nagy-app
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nagy-app
+  template:
+    metadata:
+      labels:
+        app: nagy-app
+    spec:
+      containers:
+        - name: nagy-app
+          image: docker.nagy004/my-jenkins-image2
+          ports:
+            - containerPort: 3000

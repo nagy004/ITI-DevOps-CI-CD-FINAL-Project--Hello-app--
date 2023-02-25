@@ -1,0 +1,9 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nagy-role
+  namespace: nagy
+rules:
+  - apiGroups: ["", "apps", "extensions"]
+    resources: ["*"]
+    verbs: ["*"]

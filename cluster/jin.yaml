@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: nagy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      serviceAccountName: nagy-sa
+      containers:
+      - name: jenkins
+        image: docker.io/nagy004/my-jenkins-image2
+        ports:
+        - containerPort: 8080
+
+        volumeMounts:
+          - name: var-run
+            mountPath: /var/run
+      volumes:
+        - name: var-run
+          hostPath:
+            path: /var/run
+    
+        

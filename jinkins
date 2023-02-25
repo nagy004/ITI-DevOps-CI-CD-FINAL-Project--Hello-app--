@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('CI') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'osama-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                git 'https://github.com/Osama-hassan007/App-For-Final-Project.git'
+                sh """
+                docker login -u ${USERNAME} -p ${PASSWORD}
+                docker build . -t nagy004/finalapp --network host
+                docker push nagy004/finalapp
+                """
+                }
+            }
+        }
+         stage('CD') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'osama-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                git 'https://github.com/Osama-hassan007/App-For-Final-Project.git'
+                sh """
+                docker login -u ${USERNAME} -p ${PASSWORD}
+                kubectl apply -f /var/jenkins_home/workspace/nagato/app.yaml
+                kubectl apply -f /var/jenkins_home/workspace/nagato/lba.yaml
+                """
+                }
+            }
+        }
+    }
+}
